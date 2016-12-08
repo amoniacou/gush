@@ -20,32 +20,33 @@ require "gush/worker"
 require "gush/workflow"
 
 module Gush
-  def self.gushfile
-    configuration.gushfile
-  end
 
-  def self.root
-    Pathname.new(__FILE__).parent.parent
-  end
-
-  def self.configuration
-    @configuration ||= Configuration.new
-  end
-
-  def self.configure
-    yield configuration
-    reconfigure_sidekiq
-  end
-
-  def self.reconfigure_sidekiq
-    Sidekiq.configure_server do |config|
-      config.redis = { url: configuration.redis_url, queue: configuration.namespace}
+  class << self
+    def gushfile
+      configuration.gushfile
     end
 
-    Sidekiq.configure_client do |config|
-      config.redis = { url: configuration.redis_url, queue: configuration.namespace}
+    def root
+      Pathname.new(__FILE__).parent.parent
+    end
+
+    def configuration
+      @configuration ||= Configuration.new
+    end
+
+    def configure
+      yield configuration
+      # reconfigure_sidekiq
+    end
+
+    def reconfigure_sidekiq
+      Sidekiq.configure_server do |config|
+        config.redis = { url: configuration.redis_url, queue: configuration.namespace}
+      end
+
+      Sidekiq.configure_client do |config|
+        config.redis = { url: configuration.redis_url, queue: configuration.namespace}
+      end
     end
   end
 end
-
-Gush.reconfigure_sidekiq

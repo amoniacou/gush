@@ -7,11 +7,17 @@ module Gush
     end
 
     def initialize(hash = {})
-      self.concurrency = hash.fetch(:concurrency, 5)
-      self.namespace   = hash.fetch(:namespace, 'gush')
-      self.redis_url   = hash.fetch(:redis_url, 'redis://localhost:6379')
+      redis            = Sidekiq.redis {|conn| conn}
+      self.concurrency = hash.fetch(:concurrency, Sidekiq.redis_pool.instance_variable_get(:@size))
+      url, namespace = if redis.is_a?(::Redis)
+                         [redis.client.options[:url], 'gush']
+                       else
+                         [redis.redis.client.options[:url], "#{redis.namespace}gush"]
+                       end
+      self.redis_url   = hash.fetch(:redis_url, url || 'redis://localhost:6379')
+      self.namespace   = hash.fetch(:namespace, namespace)
       self.gushfile    = hash.fetch(:gushfile, 'Gushfile.rb')
-      self.environment = hash.fetch(:environment, 'development')
+      self.environment = hash.fetch(:environment, ENV['RAILS_ENV'] || ENV['RACK_ENV'] || 'development')
     end
 
     def gushfile=(path)
