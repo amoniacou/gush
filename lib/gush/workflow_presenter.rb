@@ -1,5 +1,3 @@
-require 'sidekiq/web_helpers'
-
 module Gush
   class WorkflowPresenter
     include Sidekiq::WebHelpers
