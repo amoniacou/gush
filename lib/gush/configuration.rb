@@ -1,6 +1,6 @@
 module Gush
   class Configuration
-    attr_accessor :concurrency, :namespace, :redis_url, :environment
+    attr_accessor :concurrency, :namespace, :redis_url, :environment, :tag
 
     def self.from_json(json)
       new(Gush::JSON.decode(json, symbolize_keys: true))
@@ -18,6 +18,7 @@ module Gush
       self.namespace   = hash.fetch(:namespace, namespace)
       self.gushfile    = hash.fetch(:gushfile, 'Gushfile.rb')
       self.environment = hash.fetch(:environment, ENV['RAILS_ENV'] || ENV['RACK_ENV'] || 'development')
+      self.tag         = hash.fetch(:tag, 'gush')
     end
 
     def gushfile=(path)
@@ -33,7 +34,8 @@ module Gush
         concurrency: concurrency,
         namespace:   namespace,
         redis_url:   redis_url,
-        environment: environment
+        environment: environment,
+        tag:         tag
       }
     end
 
