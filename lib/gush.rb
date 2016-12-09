@@ -36,7 +36,7 @@ module Gush
 
     def configure
       yield configuration
-      # reconfigure_sidekiq
+      reconfigure_sidekiq
     end
 
     def reconfigure_sidekiq
@@ -50,3 +50,5 @@ module Gush
     end
   end
 end
+
+Gush.reconfigure_sidekiq
