@@ -19,7 +19,7 @@ module Gush
       self.gushfile    = hash.fetch(:gushfile, 'Gushfile.rb')
       self.environment = hash.fetch(:environment, ENV['RAILS_ENV'] || ENV['RACK_ENV'] || 'development')
       self.tag         = hash.fetch(:tag, 'gush')
-      self.log_file    = hash.fetch(:log_file, './gush.log')
+      self.log_file    = hash.fetch(:log_file, nil)
     end
 
     def gushfile=(path)
